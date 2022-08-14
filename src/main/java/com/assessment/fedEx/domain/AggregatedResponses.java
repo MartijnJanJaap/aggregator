@@ -1,4 +1,4 @@
-package com.assessment.fedEx;
+package com.assessment.fedEx.domain;
 
 import com.assessment.fedEx.domain.PricePerCountry;
 import com.assessment.fedEx.domain.ShipmentOptionsPerOrder;

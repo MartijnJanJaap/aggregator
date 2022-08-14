@@ -1,6 +1,7 @@
 package com.assessment.fedEx;
 
-import com.assessment.fedEx.domain.AggregationService;
+import com.assessment.fedEx.domain.AggregatedResponses;
+import com.assessment.fedEx.domain.AggregationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

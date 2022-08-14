@@ -1,5 +1,6 @@
 package com.assessment.fedEx;
 
+import com.assessment.fedEx.domain.AggregatedResponses;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.concurrent.SynchronousQueue;

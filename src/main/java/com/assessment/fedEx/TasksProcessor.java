@@ -1,11 +1,7 @@
 package com.assessment.fedEx;
 
-import com.assessment.fedEx.RequestQueue.API;
-import com.assessment.fedEx.RequestQueue.RequestTask;
-import com.assessment.fedEx.domain.PricePerCountry;
-import com.assessment.fedEx.domain.Request;
-import com.assessment.fedEx.domain.ShipmentOptionsPerOrder;
-import com.assessment.fedEx.domain.StatePerOrder;
+import com.assessment.fedEx.domain.RequestTask;
+import com.assessment.fedEx.domain.*;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,10 +13,9 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.assessment.fedEx.RequestQueue.API.*;
+import static com.assessment.fedEx.domain.API.*;
 import static java.util.concurrent.CompletableFuture.*;
 
 @Component

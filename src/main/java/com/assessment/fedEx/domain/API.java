@@ -1,4 +1,4 @@
-package com.assessment.fedEx.RequestQueue;
+package com.assessment.fedEx.domain;
 
 import com.assessment.fedEx.domain.ShipmentOptionsPerOrder;
 

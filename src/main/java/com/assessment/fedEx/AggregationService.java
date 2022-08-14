@@ -1,28 +1,19 @@
-package com.assessment.fedEx.domain;
+package com.assessment.fedEx;
 
-import com.assessment.fedEx.AggregatedResponses;
-import com.assessment.fedEx.AggregationRequest;
-import com.assessment.fedEx.FedExApplication;
-import com.assessment.fedEx.RequestQueue.API;
-import com.assessment.fedEx.RequestQueue.RequestTask;
-import com.assessment.fedEx.XYZClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.SourceFilteringListener;
+import com.assessment.fedEx.domain.RequestTask;
+import com.assessment.fedEx.domain.API;
+import com.assessment.fedEx.domain.AggregatedResponses;
+import com.assessment.fedEx.domain.AggregationRequest;
+import com.assessment.fedEx.domain.Request;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-import static com.assessment.fedEx.RequestQueue.API.*;
+import static com.assessment.fedEx.domain.API.*;
 
 @Component
 public class AggregationService {

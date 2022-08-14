@@ -1,7 +1,5 @@
 package com.assessment.fedEx.domain;
 
-import com.assessment.fedEx.AggregatedResponses;
-import com.assessment.fedEx.RequestQueue.RequestTask;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Set;
