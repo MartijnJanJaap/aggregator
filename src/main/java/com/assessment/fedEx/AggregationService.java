@@ -5,6 +5,7 @@ import com.assessment.fedEx.domain.API;
 import com.assessment.fedEx.domain.AggregatedResponses;
 import com.assessment.fedEx.domain.AggregationRequest;
 import com.assessment.fedEx.domain.Request;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -18,8 +19,15 @@ import static com.assessment.fedEx.domain.API.*;
 @Component
 public class AggregationService {
 
+    private final Queue queue;
+
+    @Autowired
+    public AggregationService(Queue queue) {
+        this.queue = queue;
+    }
+
     public void createAggregateRequestsTask(AggregationRequest request, DeferredResult<AggregatedResponses> deferredResult) throws ExecutionException, InterruptedException {
-        FedExApplication.getQueue().put(new Request(deferredResult, getRequestTasks(request)));
+        queue.getQueue().put(new Request(deferredResult, getRequestTasks(request)));
     }
 
     private Set<RequestTask> getRequestTasks(AggregationRequest request) {
@@ -37,8 +45,6 @@ public class AggregationService {
                     LocalDateTime.now())
         ).collect(Collectors.toSet());
     }
-
-    //think of way to remove duplicate code
     private Set<RequestTask> getPricingTask(List<String> params) {
         return params.stream().map(param ->
                 new RequestTask(

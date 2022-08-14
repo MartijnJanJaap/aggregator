@@ -22,10 +22,12 @@ import static java.util.concurrent.CompletableFuture.*;
 public class TasksProcessor implements InitializingBean {
 
     private final com.assessment.fedEx.XYZClient XYZClient;
+    private final Queue queue;
 
     @Autowired
-    public TasksProcessor(XYZClient XYZClient) {
+    public TasksProcessor(XYZClient XYZClient, Queue queue) {
         this.XYZClient = XYZClient;
+        this.queue = queue;
     }
 
     @Override
@@ -49,20 +51,19 @@ public class TasksProcessor implements InitializingBean {
     }
 
     private void respond() throws ExecutionException, InterruptedException {
-        if(FedExApplication.getQueue().size()==0) {
+        if(queue.getQueue().size()==0) {
             return;
         }
 
         List<Request> requests = new ArrayList<>();
-        FedExApplication.getQueue().drainTo(requests);
+        queue.getQueue().drainTo(requests);
 
         Map<API, List<RequestTask>> tasksPerApi = requests.stream()
                 .flatMap(request -> request.getRequestTasks().stream())
                 .collect(Collectors.groupingBy(RequestTask::api));
 
         if(tasksPerApi.values().stream().map(List::size).noneMatch(size -> size >= 5) && !requestWaitedLongEnough(tasksPerApi)) {
-            FedExApplication.getQueue().addAll(requests);
-            System.out.println("not needed to process re");
+            queue.getQueue().addAll(requests);
             return;
         }
         System.out.println("processing " + requests.size() + " requests");

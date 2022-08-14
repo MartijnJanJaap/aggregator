@@ -1,15 +1,19 @@
 package com.assessment.fedEx;
 
-import com.assessment.fedEx.domain.AggregatedResponses;
-import org.springframework.web.context.request.async.DeferredResult;
+import com.assessment.fedEx.domain.Request;
+import org.springframework.stereotype.Component;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import java.util.concurrent.SynchronousQueue;
-
+@Component
 public class Queue {
 
-    private SynchronousQueue<DeferredResult<AggregatedResponses>> queue;
+    private final LinkedBlockingQueue<Request> queue;
 
-    public Queue(SynchronousQueue<DeferredResult<AggregatedResponses>> queue) {
-        this.queue = queue;
+    public Queue() {
+        queue = new LinkedBlockingQueue<>();
+    }
+
+    public LinkedBlockingQueue<Request> getQueue() {
+        return queue;
     }
 }

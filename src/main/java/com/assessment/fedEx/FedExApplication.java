@@ -13,14 +13,8 @@ import java.util.concurrent.SynchronousQueue;
 @SpringBootApplication
 public class FedExApplication {
 
-	private static LinkedBlockingQueue<Request> queue;
-
 	public static void main(String[] args) {
-		queue = new LinkedBlockingQueue<>();
 		SpringApplication.run(FedExApplication.class, args);
 	}
 
-	public static LinkedBlockingQueue<Request> getQueue() {
-		return queue;
-	}
 }
