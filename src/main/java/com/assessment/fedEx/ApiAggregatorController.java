@@ -23,9 +23,9 @@ public class ApiAggregatorController {
 
     @GetMapping("/aggregation")
     public DeferredResult<AggregatedResponses> getAggregated(
-            @RequestParam List<String> pricing,
-            @RequestParam List<Double> track,
-            @RequestParam List<Double> shipments
+            @RequestParam(required = false, defaultValue = "") List<String> pricing,
+            @RequestParam(required = false, defaultValue = "") List<Double> track,
+            @RequestParam(required = false, defaultValue = "") List<Double> shipments
     ) throws ExecutionException, InterruptedException {
         DeferredResult<AggregatedResponses> deferredResult = new DeferredResult<>();
         aggregationService.createAggregateRequestsTask(new AggregationRequest(track, shipments, pricing), deferredResult);
