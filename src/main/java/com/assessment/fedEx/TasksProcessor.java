@@ -2,7 +2,7 @@ package com.assessment.fedEx;
 
 import com.assessment.fedEx.domain.RequestTask;
 import com.assessment.fedEx.domain.*;
-import org.springframework.beans.factory.InitializingBean;
+import com.assessment.fedEx.infrastructure.Queue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +19,10 @@ import static com.assessment.fedEx.domain.API.*;
 import static java.util.concurrent.CompletableFuture.*;
 
 @Component
-public class TasksProcessor implements InitializingBean {
+public class TasksProcessor {
 
-    private final com.assessment.fedEx.XYZClient XYZClient;
-    private final Queue queue;
+    private final XYZClient XYZClient;
+    private final com.assessment.fedEx.infrastructure.Queue queue;
 
     @Autowired
     public TasksProcessor(XYZClient XYZClient, Queue queue) {
@@ -30,47 +30,27 @@ public class TasksProcessor implements InitializingBean {
         this.queue = queue;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        producerThreadBean();
-    }
-    public void producerThreadBean(){
-        System.out.println("starting producer bean");
-        new Thread(() -> {
-            System.out.println("Starting producer thread");
-            try {
-                while (true) {
-                    respond();
-                    Thread.sleep(100);
-                }
-            }
-            catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
-
-    private void respond() throws ExecutionException, InterruptedException {
-        if(queue.getQueue().size()==0) {
+    public void process() throws ExecutionException, InterruptedException {
+        if(queue.size()==0) {
             return;
         }
 
-        List<Request> requests = new ArrayList<>();
-        queue.getQueue().drainTo(requests);
+        List<Request> requests = queue.getAll();
 
         Map<API, List<RequestTask>> tasksPerApi = requests.stream()
                 .flatMap(request -> request.getRequestTasks().stream())
                 .collect(Collectors.groupingBy(RequestTask::api));
 
         if(tasksPerApi.values().stream().map(List::size).noneMatch(size -> size >= 5) && !requestWaitedLongEnough(tasksPerApi)) {
-            queue.getQueue().addAll(requests);
+            queue.addAll(requests);
             return;
         }
+
         System.out.println("processing " + requests.size() + " requests");
 
         AggregatedResponses aggregatedResponses = getAggregatedResponses(tasksPerApi);
         requests.forEach( request -> {
-            Map<API, List<String>> requestParamsPerApi = getRequestParamsPerApi(request);
+            Map<API, Set<String>> requestParamsPerApi = getRequestParamsPerApi(request);
 
             boolean responded = request.getDeferredResult().setResult(
                     new AggregatedResponses(
@@ -129,15 +109,15 @@ public class TasksProcessor implements InitializingBean {
                 .map(RequestTask::dateTime)
                 .sorted()
                 .findFirst()
-                .map(dateTime -> ChronoUnit.SECONDS.between(dateTime, LocalDateTime.now()) > 5)
+                .map(dateTime -> ChronoUnit.SECONDS.between(dateTime, LocalDateTime.now()) > 4)
                 .orElse(false);
     }
 
-    private Map<API, List<String>> getRequestParamsPerApi(Request request) {
+    private Map<API, Set<String>> getRequestParamsPerApi(Request request) {
         return request.getRequestTasks().stream()
                 .collect(Collectors.groupingBy(RequestTask::api))
                 .entrySet().stream()
-                .map(entry -> Map.entry(entry.getKey(), entry.getValue().stream().map(RequestTask::requestParam).toList()))
+                .map(entry -> Map.entry(entry.getKey(), entry.getValue().stream().map(RequestTask::requestParam).collect(Collectors.toSet())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

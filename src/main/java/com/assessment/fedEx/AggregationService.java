@@ -5,6 +5,7 @@ import com.assessment.fedEx.domain.API;
 import com.assessment.fedEx.domain.AggregatedResponses;
 import com.assessment.fedEx.domain.AggregationRequest;
 import com.assessment.fedEx.domain.Request;
+import com.assessment.fedEx.infrastructure.Queue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -19,7 +20,7 @@ import static com.assessment.fedEx.domain.API.*;
 @Component
 public class AggregationService {
 
-    private final Queue queue;
+    private final com.assessment.fedEx.infrastructure.Queue queue;
 
     @Autowired
     public AggregationService(Queue queue) {
@@ -27,7 +28,7 @@ public class AggregationService {
     }
 
     public void createAggregateRequestsTask(AggregationRequest request, DeferredResult<AggregatedResponses> deferredResult) throws ExecutionException, InterruptedException {
-        queue.getQueue().put(new Request(deferredResult, getRequestTasks(request)));
+        queue.put(new Request(deferredResult, getRequestTasks(request)));
     }
 
     private Set<RequestTask> getRequestTasks(AggregationRequest request) {
